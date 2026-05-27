@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     android:orientation="vertical"
-    tools:context=".maj_b">
+    android:visibility="visible"
+    tools:context=".maj_b"
+    tools:visibility="visible">
 
 
     <TextView
@@ -36,6 +38,7 @@
         android:textSize="60sp"
         app:layout_constraintBottom_toBottomOf="@+id/ds"
         app:layout_constraintEnd_toEndOf="@+id/e"
+        app:layout_constraintHorizontal_bias="0.561"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
@@ -55,6 +58,7 @@
         app:layout_constraintStart_toStartOf="@+id/e"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
+
     <Button
         android:id="@+id/ds"
         android:layout_width="wrap_content"

@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    android:orientation="vertical"
     tools:context=".maj_a">
 
-
+    <!-- 标题（竖屏按钮模式下可见） -->
     <TextView
         android:id="@+id/maj_a_label"
         android:layout_width="wrap_content"
@@ -18,17 +17,30 @@
         android:textColor="#000000"
         android:textSize="90sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/a"
-        app:layout_constraintEnd_toEndOf="@+id/b"
-        app:layout_constraintStart_toStartOf="@+id/a"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible" />
 
+    <!-- 切换模式按钮（竖屏按钮模式下使用） -->
+    <Button
+        android:id="@+id/btn_switch_piano"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PIANO MODE"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/maj_a_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible" />
+
+    <!-- ========= 原始按钮模式（7个按钮，保持原样） ========= -->
+    <!-- 按钮 A -->
     <Button
         android:id="@+id/a"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/main_theme"
+        android:background="@drawable/btn_unified_selector"
         android:fontFamily="@font/intut"
         android:text="@string/MA_a"
         android:textAllCaps="false"
@@ -40,11 +52,12 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 B -->
     <Button
         android:id="@+id/b"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/main_theme"
+        android:background="@drawable/btn_selector"
         android:fontFamily="@font/intut"
         android:text="@string/MA_b"
         android:textAllCaps="false"
@@ -57,6 +70,7 @@
         app:layout_constraintVertical_bias="0.501"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 C# -->
     <Button
         android:id="@+id/cs"
         android:layout_width="wrap_content"
@@ -73,6 +87,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 D -->
     <Button
         android:id="@+id/d"
         android:layout_width="wrap_content"
@@ -89,6 +104,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 E -->
     <Button
         android:id="@+id/e"
         android:layout_width="wrap_content"
@@ -105,6 +121,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 F# -->
     <Button
         android:id="@+id/fs"
         android:layout_width="wrap_content"
@@ -121,6 +138,7 @@
         app:layout_constraintTop_toTopOf="@+id/d"
         tools:ignore="MissingConstraints" />
 
+    <!-- 按钮 G# -->
     <Button
         android:id="@+id/gs"
         android:layout_width="wrap_content"
@@ -137,5 +155,43 @@
         app:layout_constraintTop_toTopOf="@+id/d"
         tools:ignore="MissingConstraints" />
 
+    <!-- ========= 钢琴模式容器（全屏覆盖，顶部带紧凑切换按钮） ========= -->
+    <LinearLayout
+        android:id="@+id/pianoLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="#000000">
+
+        <!-- 顶部按钮栏：更小的切换按钮，减少占用空间 -->
+        <Button
+            android:id="@+id/piano_mode_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="BUTTON MODE"
+            android:textSize="14sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:minHeight="0dp"
+            android:background="@android:drawable/btn_default" />
+
+        <!-- 钢琴键盘视图，占据剩余全部空间 -->
+        <com.example.chords.PianoView
+            android:id="@+id/pianoView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

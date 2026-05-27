@@ -1,224 +1,148 @@
 package com.example.chords;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class maj_a extends AppCompatActivity {
-    Button button1,button2,button3,button4,button5,button6,button7;
-    TextView ma_back;
+
     private SoundPool soundPool;
-    private int sound1,sound2,sound3,sound4,sound5,sound6,sound7;
-    Animation a_up,a_dw;
+    private int sound1, sound2, sound3, sound4, sound5, sound6, sound7;
+    private Animation a_up, a_dw;
 
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            soundPool.release();
-
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+    private Button button1, button2, button3, button4, button5, button6, button7;
+    private LinearLayout pianoLayout;
+    private PianoView pianoView;
+    private Button btnSwitch;
+    private Button pianoModeBtn;
+    private TextView titleLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maj_a);
 
-        button1= findViewById(R.id.a);
-        button2= findViewById(R.id.b);
-        button3= findViewById(R.id.cs);
-        button4= findViewById(R.id.d);
-        button5= findViewById(R.id.e);
-        button6= findViewById(R.id.fs);
-        button7= findViewById(R.id.gs);
-        ma_back=findViewById(R.id.maj_a_label);
+        button1 = findViewById(R.id.a);
+        button2 = findViewById(R.id.b);
+        button3 = findViewById(R.id.cs);
+        button4 = findViewById(R.id.d);
+        button5 = findViewById(R.id.e);
+        button6 = findViewById(R.id.fs);
+        button7 = findViewById(R.id.gs);
+        pianoLayout = findViewById(R.id.pianoLayout);
+        pianoView = findViewById(R.id.pianoView);
+        btnSwitch = findViewById(R.id.btn_switch_piano);
+        pianoModeBtn = findViewById(R.id.piano_mode_btn);
+        titleLabel = findViewById(R.id.maj_a_label);
 
+        // 点击标题返回上一页
+        titleLabel.setOnClickListener(v -> {
+            startActivity(new Intent(maj_a.this, maj_intent.class));
+            finish();
+        });
+
+        // 初始化音效池
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder().setMaxStreams(7).build();
-        }   else {
-            soundPool= new SoundPool(7, AudioManager.STREAM_MUSIC , 0);
+        } else {
+            soundPool = new SoundPool(7, AudioManager.STREAM_MUSIC, 0);
         }
-        sound1=soundPool.load(this, R.raw.maj_a_a,1);
-        sound2=soundPool.load(this, R.raw.maj_a_b,1);
-        sound3=soundPool.load(this, R.raw.maj_a_cs,1);
-        sound4=soundPool.load(this, R.raw.maj_a_d,1);
-        sound5=soundPool.load(this, R.raw.maj_a_e,1);
-        sound6=soundPool.load(this, R.raw.maj_a_fs,1);
-        sound7=soundPool.load(this, R.raw.maj_a_gs,1);
+        sound1 = soundPool.load(this, R.raw.maj_a_a, 1);
+        sound2 = soundPool.load(this, R.raw.maj_a_b, 1);
+        sound3 = soundPool.load(this, R.raw.maj_a_cs, 1);
+        sound4 = soundPool.load(this, R.raw.maj_a_d, 1);
+        sound5 = soundPool.load(this, R.raw.maj_a_e, 1);
+        sound6 = soundPool.load(this, R.raw.maj_a_fs, 1);
+        sound7 = soundPool.load(this, R.raw.maj_a_gs, 1);
 
-        a_up = AnimationUtils.loadAnimation(this,R.anim.anim);
-        a_dw = AnimationUtils.loadAnimation(this,R.anim.anim2);
+        a_up = AnimationUtils.loadAnimation(this, R.anim.anim);
+        a_dw = AnimationUtils.loadAnimation(this, R.anim.anim2);
 
+        setupButton(button1, sound1);
+        setupButton(button2, sound2);
+        setupButton(button3, sound3);
+        setupButton(button4, sound4);
+        setupButton(button5, sound5);
+        setupButton(button6, sound6);
+        setupButton(button7, sound7);
 
-        ma_back.setOnClickListener(new View.OnClickListener() {
+        pianoView.setKeyListener(new PianoView.OnKeyListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(maj_a.this,maj_intent.class);
-                startActivity(intent);
-                soundPool.release();
-            }
-        });
-
-
-        button1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button1.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button1.startAnimation(a_dw);
+            public void onKeyDown(int keyIndex, boolean isBlack) {
+                int soundId = -1;
+                if (!isBlack) {
+                    switch (keyIndex) {
+                        case 5: soundId = sound1; break;
+                        case 6: soundId = sound2; break;
+                        case 1: soundId = sound4; break;
+                        case 2: soundId = sound5; break;
+                    }
+                } else {
+                    switch (keyIndex) {
+                        case 0: soundId = sound3; break;
+                        case 2: soundId = sound6; break;
+                        case 3: soundId = sound7; break;
+                    }
                 }
-                return false;
-
+                if (soundId != -1) soundPool.play(soundId, 1, 1, 0, 0, 1);
             }
-
+            @Override public void onKeyUp(int keyIndex, boolean isBlack) {}
         });
 
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound1,1,1,0,0,1);
-            }
+        btnSwitch.setOnClickListener(v -> {
+            setButtonModeVisibility(false);
+            pianoLayout.setVisibility(View.VISIBLE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            pianoView.postDelayed(pianoView::requestLayout, 100);
         });
 
-        button2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button2.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button2.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
+        pianoModeBtn.setOnClickListener(v -> {
+            pianoLayout.setVisibility(View.GONE);
+            setButtonModeVisibility(true);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         });
+    }
 
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound2,1,1,0,0,1);
+    private void setButtonModeVisibility(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.GONE;
+        titleLabel.setVisibility(visibility);
+        btnSwitch.setVisibility(visibility);
+        button1.setVisibility(visibility);
+        button2.setVisibility(visibility);
+        button3.setVisibility(visibility);
+        button4.setVisibility(visibility);
+        button5.setVisibility(visibility);
+        button6.setVisibility(visibility);
+        button7.setVisibility(visibility);
+    }
+
+    private void setupButton(final Button btn, final int soundId) {
+        btn.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                btn.startAnimation(a_up);
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                btn.startAnimation(a_dw);
+                soundPool.play(soundId, 1, 1, 0, 0, 1);
             }
+            return false;   // 必须返回 false，让按钮自己管理 pressed 状态
         });
+        // 不要设置 setOnClickListener
+    }
 
-        button3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button3.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button3.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
-        });
-
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound3,1,1,0,0,1);
-            }
-        });
-
-        button4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button4.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button4.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
-        });
-
-        button4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound4,1,1,0,0,1);
-            }
-        });
-
-        button5.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button5.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button5.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
-        });
-
-        button5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound5,1,1,0,0,1);
-            }
-        });
-
-        button6.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button6.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button6.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
-        });
-
-        button6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound6,1,1,0,0,1);
-            }
-        });
-
-        button7.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
-                    button7.startAnimation(a_up);
-                } else if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-                    button7.startAnimation(a_dw);
-                }
-                return false;
-
-            }
-
-        });
-
-        button7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                soundPool.play(sound7,1,1,0,0,1);
-            }
-        });
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (soundPool != null) soundPool.release();
     }
 }

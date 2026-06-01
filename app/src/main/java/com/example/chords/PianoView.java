@@ -17,7 +17,7 @@ public class PianoView extends View {
     private static final int WHITE_KEYS = 7;
     private static final int BLACK_KEYS = 5;
     private static final int PRESS_DOWN_SHIFT_DP = 4;
-    private static final float BLACK_KEY_OFFSET_FACTOR = 0.5f;
+    private static final float BLACK_KEY_OFFSET_FACTOR = 0f;
 
     private float pressDownShiftPx;
     private final List<RectF> whiteKeyRects = new ArrayList<>();

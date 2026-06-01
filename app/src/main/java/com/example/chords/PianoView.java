@@ -16,29 +16,34 @@ public class PianoView extends View {
 
     private static final int WHITE_KEYS = 7;
     private static final int BLACK_KEYS = 5;
+    private static final int PRESS_DOWN_SHIFT_DP = 4;
+    private static final float BLACK_KEY_OFFSET_FACTOR = 0.5f;
 
+    private float pressDownShiftPx;
     private final List<RectF> whiteKeyRects = new ArrayList<>();
     private final List<RectF> blackKeyRects = new ArrayList<>();
 
     private final Paint whitePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint blackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint gapFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaintWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaintBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final int[] whiteKeyColors = new int[WHITE_KEYS];
     private final int[] blackKeyColors = new int[BLACK_KEYS];
 
+    private int pressedKeyIndex = -1;
+    private boolean pressedIsBlack = false;
+
     private OnKeyListener keyListener;
 
-    // 白键对应的音名（索引 0~6 对应 C, D, E, F, G, A, B）
+    // 预分配临时 RectF 对象，避免在 onDraw 中创建新对象
+    private final RectF tmpRect = new RectF();
+
     private final String[] whiteKeyNames = {"C", "D", "E", "F", "G", "A", "B"};
-    // 黑键对应的音名（索引 0~4 对应 C#, D#, F#, G#, A#）
     private final String[] blackKeyNames = {"C#", "D#", "F#", "G#", "A#"};
 
-    // 控制哪些键显示文字（根据 A 大调的发声键）
-    // 白键中 A(5)、B(6)、D(1)、E(2) 发声；C(0)、F(3)、G(4) 不发声
     private final boolean[] whiteKeyShowText = {false, true, true, false, false, true, true};
-    // 黑键中 C#(0)、F#(2)、G#(3) 发声；D#(1)、A#(4) 不发声
     private final boolean[] blackKeyShowText = {true, false, true, true, false};
 
     public interface OnKeyListener {
@@ -48,32 +53,35 @@ public class PianoView extends View {
 
     public PianoView(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public PianoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
         Arrays.fill(whiteKeyColors, Color.WHITE);
         Arrays.fill(blackKeyColors, Color.BLACK);
 
-        // 白键文字样式：黑色、小字、底部居中
+        gapFillPaint.setColor(Color.BLACK);
+        gapFillPaint.setStyle(Paint.Style.FILL);
+
         textPaintWhite.setColor(Color.BLACK);
-        textPaintWhite.setTextSize(32f); // 单位 px，可根据屏幕密度调整，或者使用 sp 转换
+        textPaintWhite.setTextSize(32f);
         textPaintWhite.setTextAlign(Paint.Align.CENTER);
 
-        // 黑键文字样式：白色、小字、底部居中
         textPaintBlack.setColor(Color.WHITE);
         textPaintBlack.setTextSize(28f);
         textPaintBlack.setTextAlign(Paint.Align.CENTER);
+
+        pressDownShiftPx = PRESS_DOWN_SHIFT_DP * context.getResources().getDisplayMetrics().density;
     }
 
     public void setKeyListener(OnKeyListener listener) {
@@ -104,18 +112,16 @@ public class PianoView extends View {
         float blackKeyWidth = whiteKeyWidth * 0.6f;
         float blackKeyHeight = height * 0.6f;
 
-        // 白键
         for (int i = 0; i < WHITE_KEYS; i++) {
             float left = i * whiteKeyWidth;
             float right = left + whiteKeyWidth;
             whiteKeyRects.add(new RectF(left, 0, right, height));
         }
 
-        // 黑键位置（标准钢琴：C#(1), D#(2), F#(4), G#(5), A#(6) 对应的白键索引）
         int[] blackKeyPositions = {1, 2, 4, 5, 6};
         for (int i = 0; i < BLACK_KEYS; i++) {
             int whiteIndex = blackKeyPositions[i];
-            float left = (whiteIndex + 0.5f) * whiteKeyWidth - blackKeyWidth / 2;
+            float left = (whiteIndex + BLACK_KEY_OFFSET_FACTOR) * whiteKeyWidth - blackKeyWidth / 2;
             float right = left + blackKeyWidth;
             blackKeyRects.add(new RectF(left, 0, right, blackKeyHeight));
         }
@@ -123,40 +129,56 @@ public class PianoView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        canvas.save();
+
         // 绘制白键
         for (int i = 0; i < whiteKeyRects.size(); i++) {
-            RectF rect = whiteKeyRects.get(i);
+            RectF original = whiteKeyRects.get(i);
+            float offsetY = (pressedKeyIndex == i && !pressedIsBlack) ? pressDownShiftPx : 0;
+            // 复用 tmpRect，避免分配新对象
+            tmpRect.set(original.left, original.top + offsetY,
+                    original.right, original.bottom + offsetY);
             whitePaint.setColor(whiteKeyColors[i]);
-            canvas.drawRect(rect, whitePaint);
+            canvas.drawRect(tmpRect, whitePaint);
             // 边框
             whitePaint.setColor(Color.BLACK);
             whitePaint.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(rect, whitePaint);
+            canvas.drawRect(tmpRect, whitePaint);
             whitePaint.setStyle(Paint.Style.FILL);
 
-            // 绘制白键文字（需要显示的键）
             if (whiteKeyShowText[i]) {
-                String label = whiteKeyNames[i];
-                float x = rect.centerX();
-                float y = rect.bottom - 20; // 距离底部 20px，可根据需要调整
-                canvas.drawText(label, x, y, textPaintWhite);
+                float x = tmpRect.centerX();
+                float y = tmpRect.bottom - 20;
+                canvas.drawText(whiteKeyNames[i], x, y, textPaintWhite);
             }
         }
 
         // 绘制黑键
         for (int i = 0; i < blackKeyRects.size(); i++) {
-            RectF rect = blackKeyRects.get(i);
-            blackPaint.setColor(blackKeyColors[i]);
-            canvas.drawRect(rect, blackPaint);
+            RectF original = blackKeyRects.get(i);
+            boolean isPressed = (pressedKeyIndex == i && pressedIsBlack);
+            float offsetY = isPressed ? pressDownShiftPx : 0;
 
-            // 绘制黑键文字（需要显示的键）
+            // 填充缝隙（复用 tmpRect）
+            if (isPressed && offsetY > 0) {
+                tmpRect.set(original.left, original.top,
+                        original.right, original.top + offsetY);
+                canvas.drawRect(tmpRect, gapFillPaint);
+            }
+
+            tmpRect.set(original.left, original.top + offsetY,
+                    original.right, original.bottom + offsetY);
+            blackPaint.setColor(blackKeyColors[i]);
+            canvas.drawRect(tmpRect, blackPaint);
+
             if (blackKeyShowText[i]) {
-                String label = blackKeyNames[i];
-                float x = rect.centerX();
-                float y = rect.bottom - 12; // 距离底部 12px
-                canvas.drawText(label, x, y, textPaintBlack);
+                float x = tmpRect.centerX();
+                float y = tmpRect.bottom - 12;
+                canvas.drawText(blackKeyNames[i], x, y, textPaintBlack);
             }
         }
+
+        canvas.restore();
     }
 
     @Override
@@ -165,17 +187,47 @@ public class PianoView extends View {
         float y = event.getY();
         int action = event.getActionMasked();
 
-        // 先检测黑键
+        int foundIndex = -1;
+        boolean foundBlack = false;
+        // 触摸检测使用原始矩形（未偏移）
         for (int i = 0; i < blackKeyRects.size(); i++) {
             if (blackKeyRects.get(i).contains(x, y)) {
-                handleKeyEvent(i, true, action);
-                return true;
+                foundIndex = i;
+                foundBlack = true;
+                break;
             }
         }
-        // 再检测白键
-        for (int i = 0; i < whiteKeyRects.size(); i++) {
-            if (whiteKeyRects.get(i).contains(x, y)) {
-                handleKeyEvent(i, false, action);
+        if (foundIndex == -1) {
+            for (int i = 0; i < whiteKeyRects.size(); i++) {
+                if (whiteKeyRects.get(i).contains(x, y)) {
+                    foundIndex = i;
+                    foundBlack = false;
+                    break;
+                }
+            }
+        }
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (foundIndex != -1) {
+                pressedKeyIndex = foundIndex;
+                pressedIsBlack = foundBlack;
+                invalidate();
+                if (keyListener != null) {
+                    keyListener.onKeyDown(foundIndex, foundBlack);
+                }
+                // 调用 performClick 以满足无障碍要求
+                performClick();
+                return true;
+            }
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            if (pressedKeyIndex != -1) {
+                int idx = pressedKeyIndex;
+                boolean blk = pressedIsBlack;
+                pressedKeyIndex = -1;
+                invalidate();
+                if (keyListener != null) {
+                    keyListener.onKeyUp(idx, blk);
+                }
                 return true;
             }
         }
@@ -186,14 +238,5 @@ public class PianoView extends View {
     public boolean performClick() {
         super.performClick();
         return true;
-    }
-
-    private void handleKeyEvent(int index, boolean isBlack, int action) {
-        if (keyListener == null) return;
-        if (action == MotionEvent.ACTION_DOWN) {
-            keyListener.onKeyDown(index, isBlack);
-        } else if (action == MotionEvent.ACTION_UP) {
-            keyListener.onKeyUp(index, isBlack);
-        }
     }
 }

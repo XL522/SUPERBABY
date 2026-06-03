@@ -243,7 +243,17 @@
     <string name="mb_fs">f#</string>
     <string name="mb_g">G</string>
     <string name="mb_a">A</string>
-
-
+    <string name="key_a">A</string>
+    <string name="key_b">B</string>
+    <string name="key_c">C</string>
+    <string name="key_d">D</string>
+    <string name="key_e">E</string>
+    <string name="key_f">F</string>
+    <string name="key_g">G</string>
+    <string name="key_c_sharp">C#</string>
+    <string name="key_d_sharp">D#</string>
+    <string name="key_f_sharp">F#</string>
+    <string name="key_g_sharp">G#</string>
+    <string name="key_a_sharp">A#</string>
 </resources>
 

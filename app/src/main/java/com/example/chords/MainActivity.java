@@ -16,6 +16,8 @@ import com.example.chords.model.ChordProgression;
 import com.example.chords.player.ChordPlayer;
 import com.example.chords.player.LoopPlayer;
 import android.os.Handler;
+import com.example.chords.player.Metronome;
+
 /**
  * 应用的主界面 Activity
  * 功能：
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private LoopPlayer loopPlayer;
     private ChordProgression progression;
 
-
+    Metronome metronome ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +57,13 @@ public class MainActivity extends AppCompatActivity {
         // 3. 设置控件的点击/触摸事件
         setupListeners();
 
-        new Handler().postDelayed(() -> {
-            chordPlayer.playChord(
-                    new Chord("C", "maj")
-            );
-        }, 3000);
 
         chordPlayer = new ChordPlayer(this);
 
         loopPlayer =
                 new LoopPlayer(chordPlayer);
 
-        ChordProgression progression =
+         progression =
                 new ChordProgression();
 
         progression.addChord(
@@ -81,19 +78,17 @@ public class MainActivity extends AppCompatActivity {
         progression.addChord(
                 new Chord("F", "maj"));
 
-        new Handler().postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
 
-                        if (chordPlayer.isLoaded()) {
-                            loopPlayer.start(progression);
-                        }
+        metronome = new Metronome(this);
 
-                    }
-                },
-                3000
-        );
+        loopPlayer.setMetronome(
+                metronome);
+
+        loopPlayer.setMetronomeEnabled(
+                true);
+        loopPlayer.setBpm(120);
+
+        loopPlayer.start(progression);
 
     }
 

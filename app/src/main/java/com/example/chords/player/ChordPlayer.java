@@ -17,7 +17,11 @@ public class ChordPlayer {
     private HashMap<String, Integer> sounds =
             new HashMap<>();
 
+    private Context context;
+
     public ChordPlayer(Context context) {
+
+        this.context = context;
 
         if (Build.VERSION.SDK_INT >=
                 Build.VERSION_CODES.LOLLIPOP) {
@@ -88,28 +92,52 @@ public class ChordPlayer {
 
     public void playChord(Chord chord) {
 
-        String name = chord.getDisplayName();
+        String resourceName =
+                ChordResourceManager
+                        .getResourceName(chord);
 
-        Log.d("ChordPlayer", "播放：" + name);
+        int resId =
+                context.getResources()
+                        .getIdentifier(
+                                resourceName,
+                                "raw",
+                                context.getPackageName()
+                        );
 
-        Integer soundId = sounds.get(name);
+        if (resId == 0) {
 
-        if (soundId != null) {
-
-            soundPool.play(
-                    soundId,
-                    1,
-                    1,
-                    0,
-                    0,
-                    1
+            Log.e(
+                    "ChordPlayer",
+                    "找不到资源："
+                            + resourceName
             );
 
-        } else {
-
-            Log.e("ChordPlayer",
-                    "找不到音频：" + name);
+            return;
         }
+
+        int soundId =
+                soundPool.load(
+                        context,
+                        resId,
+                        1
+                );
+
+        soundPool.setOnLoadCompleteListener(
+                (pool, id, status) -> {
+
+                    if (id == soundId) {
+
+                        pool.play(
+                                soundId,
+                                1,
+                                1,
+                                0,
+                                0,
+                                1
+                        );
+                    }
+                }
+        );
     }
 
     public void stop() {

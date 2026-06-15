@@ -2,6 +2,7 @@ package com.example.chords;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -13,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chords.model.Chord;
 import com.example.chords.model.ChordProgression;
+import com.example.chords.music.Transposer;
 import com.example.chords.player.ChordPlayer;
+import com.example.chords.player.ChordResourceManager;
 import com.example.chords.player.LoopPlayer;
 import android.os.Handler;
 import com.example.chords.player.Metronome;
@@ -79,16 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 new Chord("F", "maj"));
 
 
-        metronome = new Metronome(this);
-
-        loopPlayer.setMetronome(
-                metronome);
-
-        loopPlayer.setMetronomeEnabled(
-                true);
-        loopPlayer.setBpm(120);
-
-        loopPlayer.start(progression);
 
     }
 

@@ -11,6 +11,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.chords.model.Chord;
+import com.example.chords.model.ChordProgression;
+import com.example.chords.player.ChordPlayer;
+import com.example.chords.player.LoopPlayer;
+import android.os.Handler;
 /**
  * 应用的主界面 Activity
  * 功能：
@@ -29,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
     // 动画资源声明
     private Animation a_up; // 按下时的动画（放大/上浮）
     private Animation a_dw; // 抬起时的动画（缩小/回落）
+    private ChordPlayer chordPlayer;
+    private LoopPlayer loopPlayer;
+    private ChordProgression progression;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +54,60 @@ public class MainActivity extends AppCompatActivity {
 
         // 3. 设置控件的点击/触摸事件
         setupListeners();
+
+        new Handler().postDelayed(() -> {
+            chordPlayer.playChord(
+                    new Chord("C", "maj")
+            );
+        }, 3000);
+
+        chordPlayer = new ChordPlayer(this);
+
+        loopPlayer =
+                new LoopPlayer(chordPlayer);
+
+        ChordProgression progression =
+                new ChordProgression();
+
+        progression.addChord(
+                new Chord("C", "maj"));
+
+        progression.addChord(
+                new Chord("G", "maj"));
+
+        progression.addChord(
+                new Chord("A", "min"));
+
+        progression.addChord(
+                new Chord("F", "maj"));
+
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (chordPlayer.isLoaded()) {
+                            loopPlayer.start(progression);
+                        }
+
+                    }
+                },
+                3000
+        );
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+
+        if (loopPlayer != null)
+            loopPlayer.stop();
+
+        if (chordPlayer != null)
+            chordPlayer.release();
     }
 
     /**
@@ -110,4 +174,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
 }

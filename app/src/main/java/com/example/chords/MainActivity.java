@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     Metronome metronome ;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
         // 3. 设置控件的点击/触摸事件
         setupListeners();
 
+        new Handler().postDelayed(() -> {
+            chordPlayer.playChord(
+                    new Chord("C", "maj")
+            );
+        }, 3000);
 
         chordPlayer = new ChordPlayer(this);
 

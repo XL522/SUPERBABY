@@ -16,7 +16,7 @@ import com.example.chords.model.Chord;
 import com.example.chords.model.ChordProgression;
 import com.example.chords.music.Transposer;
 import com.example.chords.player.ChordPlayer;
-import com.example.chords.player.ChordResourceManager;
+//import com.example.chords.player.ChordResourceManager;
 import com.example.chords.player.LoopPlayer;
 import android.os.Handler;
 import com.example.chords.player.Metronome;
@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private ChordPlayer chordPlayer;
     private LoopPlayer loopPlayer;
     private ChordProgression progression;
+    private Button h_create;
 
+    private Button h_favorites;
     Metronome metronome ;
 
     @Override
@@ -105,7 +107,13 @@ public class MainActivity extends AppCompatActivity {
         home_chord = findViewById(R.id.chords);
         h_maj = findViewById(R.id.h_major);
         h_min = findViewById(R.id.h_minor);
+        h_create = findViewById(R.id.h_create);
+        h_favorites =
+                findViewById(
+                        R.id.h_favorites
+                );// 新增
     }
+
 
     /**
      * 加载动画资源
@@ -161,6 +169,29 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, min_intent.class);
             startActivity(intent);
         });
+
+        h_create.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    ProgressionEditorActivity.class
+            );
+
+            startActivity(intent);
+
+        });
+        h_favorites.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            MainActivity.this,
+                            FavoritesActivity.class
+                    );
+
+            startActivity(intent);
+
+        });
+
     }
 
 }

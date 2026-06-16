@@ -145,5 +145,4 @@ public class ChordPlayer {
 
     public void release() {
         soundPool.release();
-    }
-}
+    }}

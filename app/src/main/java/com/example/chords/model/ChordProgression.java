@@ -12,10 +12,27 @@ public class ChordProgression {
     }
 
     public void removeChord(int index) {
-        chords.remove(index);
+        if (index >= 0 && index < chords.size()) {
+            chords.remove(index);
+        }
+    }
+
+    public void moveChord(int from, int to) {
+
+        if (from < 0 || from >= chords.size()
+                || to < 0 || to >= chords.size()) {
+            return;
+        }
+
+        Chord chord = chords.remove(from);
+        chords.add(to, chord);
     }
 
     public List<Chord> getChords() {
         return chords;
+    }
+
+    public void clear() {
+        chords.clear();
     }
 }

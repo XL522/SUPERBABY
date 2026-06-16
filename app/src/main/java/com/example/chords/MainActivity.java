@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView home_chord; // 主界面文本控件
     private Button h_maj;         // 大调按钮
     private Button h_min;         // 小调按钮
+    private Button h_piano;   // 钢琴按钮
 
     // 动画资源声明
     private Animation a_up; // 按下时的动画（放大/上浮）
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(
                         R.id.h_favorites
                 );// 新增
+        h_piano = findViewById(R.id.h_piano);
     }
 
 
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         home_chord.setOnClickListener(v -> {
             // 弹出吐司提示，显示开发者信息
             Toast.makeText(MainActivity.this, "Made by 2heb Developer", Toast.LENGTH_SHORT).show();
+
         });
 
         // --- 大调按钮 h_maj 触摸事件（动画反馈）---
@@ -192,6 +195,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        h_piano.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PianoActivity.class);
+            startActivity(intent);
+        });
     }
 
 }

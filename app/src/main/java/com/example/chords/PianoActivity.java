@@ -6,37 +6,43 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PianoActivity extends AppCompatActivity {
 
     private SoundPool soundPool;
-    private final int[] soundIds = new int[12]; // 加 final
+    private final int[] soundIds = new int[12];
     private PianoView pianoView;
 
-    // 根据您现有的音频资源映射
     private static final int[] WHITE_KEY_RES = {
-            0,                  // C
-            R.raw.maj_a_d,      // D
-            R.raw.maj_a_e,      // E
-            0,                  // F
-            0,                  // G
-            R.raw.maj_a_a,      // A
-            R.raw.maj_a_b       // B
+            0,              // C
+            R.raw.maj_a_d,  // D
+            R.raw.maj_a_e,  // E
+            0,              // F
+            0,              // G
+            R.raw.maj_a_a,  // A
+            R.raw.maj_a_b   // B
     };
+
     private static final int[] BLACK_KEY_RES = {
-            R.raw.maj_a_cs,     // C#
-            0,                  // D#
-            R.raw.maj_a_fs,     // F#
-            R.raw.maj_a_gs,     // G#
-            0                   // A#
+            R.raw.maj_a_cs, // C#
+            0,              // D#
+            R.raw.maj_a_fs, // F#
+            R.raw.maj_a_gs, // G#
+            0               // A#
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_piano); // 现在布局存在
+        setContentView(R.layout.activity_piano);
+
         pianoView = findViewById(R.id.pianoView);
+
+        Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
 
         initSoundPool();
         loadSounds();
@@ -45,27 +51,32 @@ public class PianoActivity extends AppCompatActivity {
             @Override
             public void onKeyDown(int keyIndex, boolean isBlack) {
                 int soundId = isBlack ? soundIds[7 + keyIndex] : soundIds[keyIndex];
-                if (soundId != 0) {
+                if (soundId != 0 && soundPool != null) {
                     soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
                 }
             }
 
             @Override
-            public void onKeyUp(int keyIndex, boolean isBlack) { }
+            public void onKeyUp(int keyIndex, boolean isBlack) {
+                // 先不处理松键
+            }
         });
 
         Intent intent = getIntent();
         String type = intent.getStringExtra("CHORD_TYPE");
-        if (type != null && type.equals("A_MAJOR")) {
+        if ("A_MAJOR".equals(type)) {
             boolean[] whiteHighlights = new boolean[7];
             boolean[] blackHighlights = new boolean[5];
+
             whiteHighlights[5] = true; // A
             whiteHighlights[6] = true; // B
             whiteHighlights[1] = true; // D
             whiteHighlights[2] = true; // E
+
             blackHighlights[0] = true; // C#
             blackHighlights[2] = true; // F#
             blackHighlights[3] = true; // G#
+
             pianoView.highlightNotes(whiteHighlights, blackHighlights);
         }
     }
@@ -76,6 +87,7 @@ public class PianoActivity extends AppCompatActivity {
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build();
+
             soundPool = new SoundPool.Builder()
                     .setMaxStreams(10)
                     .setAudioAttributes(audioAttributes)
@@ -92,6 +104,7 @@ public class PianoActivity extends AppCompatActivity {
                 soundIds[i] = soundPool.load(this, WHITE_KEY_RES[i], 1);
             }
         }
+
         for (int i = 0; i < BLACK_KEY_RES.length; i++) {
             if (BLACK_KEY_RES[i] != 0) {
                 soundIds[7 + i] = soundPool.load(this, BLACK_KEY_RES[i], 1);
@@ -104,6 +117,7 @@ public class PianoActivity extends AppCompatActivity {
         super.onDestroy();
         if (soundPool != null) {
             soundPool.release();
+            soundPool = null;
         }
     }
 }

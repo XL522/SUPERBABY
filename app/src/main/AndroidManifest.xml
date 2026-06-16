@@ -44,6 +44,8 @@
         <activity android:name=".min_intent" android:screenOrientation="portrait" android:exported="false"/>
         <activity android:name=".maj_intent" android:screenOrientation="portrait" android:exported="false"/>
 
+        <activity android:name=".ProgressionEditorActivity" android:screenOrientation="portrait" android:exported="false"/>
+        <activity android:name=".FavoritesActivity" android:screenOrientation="portrait" android:exported="false"/>
         <!-- 主入口：必须 exported="true" -->
         <activity
             android:name=".MainActivity"

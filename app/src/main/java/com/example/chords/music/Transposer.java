@@ -1,75 +1,52 @@
 package com.example.chords.music;
 
 import com.example.chords.model.Chord;
-import com.example.chords.model.ChordProgression;
+import com.example.chords.model.ChordFactory;
 
 public class Transposer {
-    private static final String[] NOTES = {
 
-            "C",
-            "C#",
-            "D",
-            "D#",
-            "E",
-            "F",
-            "F#",
-            "G",
-            "G#",
-            "A",
-            "A#",
-            "B"
+    private static final String[] KEYS = {
+
+            "C","C#","D","D#","E","F",
+            "F#","G","G#","A","A#","B"
     };
 
     public static Chord transpose(
             Chord chord,
-            int semitone) {
+            int semitone,
+            String mode,
+            int degree) {
 
-        String root = chord.getRoot();
+        int index = findKeyIndex(
+                chord.getDisplayName()
+        );
 
-        int index = -1;
-
-        for (int i = 0;
-             i < NOTES.length;
-             i++) {
-
-            if (NOTES[i].equals(root)) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index == -1)
+        if (index == -1) {
             return chord;
+        }
 
         int newIndex =
                 (index + semitone + 12)
                         % 12;
 
-        return new Chord(
-                NOTES[newIndex],
-                chord.getType()
+        return ChordFactory.create(
+                KEYS[newIndex],
+                mode,
+                degree
         );
     }
 
-    public static ChordProgression transpose(
-            ChordProgression progression,
-            int semitone) {
+    private static int findKeyIndex(String key) {
 
-        ChordProgression result =
-                new ChordProgression();
+        for (int i = 0;
+             i < KEYS.length;
+             i++) {
 
-        for (Chord chord :
-                progression.getChords()) {
-
-            result.addChord(
-                    transpose(
-                            chord,
-                            semitone
-                    )
-            );
+            if (key.contains(KEYS[i])) {
+                return i;
+            }
         }
 
-        return result;
+        return -1;
     }
-
 }

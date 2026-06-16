@@ -1,0 +1,27 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:layout_margin="12dp"
+
+    android:padding="16dp"
+
+    android:background="@drawable/main_theme"
+
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvItem"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+
+        android:textColor="#000000"
+
+        android:textSize="22sp"
+
+        android:fontFamily="@font/intut"/>
+</LinearLayout>

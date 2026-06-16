@@ -75,6 +75,35 @@
 
 
     <Space
+        android:layout_width="match_parent"
+        android:layout_height="80dp" />
+
+    <Button
+        android:id="@+id/h_create"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/main_theme"
+        android:fontFamily="@font/intut"
+        android:text="CREATE"
+        android:textColor="#000000"
+        android:textSize="50sp"
+        android:textStyle="bold"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="80dp"/>
+    <Button
+        android:id="@+id/h_favorites"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/main_theme"
+        android:fontFamily="@font/intut"
+        android:text="FAVORITES"
+        android:textColor="#000000"
+        android:textSize="40sp"
+        android:textStyle="bold"/>
             android:layout_width="match_parent"
             android:layout_height="155dp" />
 

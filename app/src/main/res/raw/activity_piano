@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="钢琴弹奏"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="4">
+
+            <Button android:id="@+id/btn_c4" android:text="C4" />
+            <Button android:id="@+id/btn_cs4" android:text="C#4" />
+            <Button android:id="@+id/btn_d4" android:text="D4" />
+            <Button android:id="@+id/btn_ds4" android:text="D#4" />
+
+            <Button android:id="@+id/btn_e4" android:text="E4" />
+            <Button android:id="@+id/btn_f4" android:text="F4" />
+            <Button android:id="@+id/btn_fs4" android:text="F#4" />
+            <Button android:id="@+id/btn_g4" android:text="G4" />
+
+            <Button android:id="@+id/btn_gs4" android:text="G#4" />
+            <Button android:id="@+id/btn_a4" android:text="A4" />
+            <Button android:id="@+id/btn_as4" android:text="A#4" />
+            <Button android:id="@+id/btn_b4" android:text="B4" />
+
+            <Button android:id="@+id/btn_c5" android:text="C5" />
+        </GridLayout>
+    </LinearLayout>
+</ScrollView>
